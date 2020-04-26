@@ -55,7 +55,7 @@ export default {
       .get()
       .then(results => {
         results.forEach(doc => {
-          if (checked) {
+          if (checked === true) {
             this.submissions = this.submissions.filter(item => {
               return item.checked === "true";
             });
