@@ -5,3 +5,5 @@
 <script>
 export default {};
 </script>
+
+<style src='../public/css/main.css'></style>

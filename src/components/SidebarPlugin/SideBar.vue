@@ -1,70 +1,119 @@
 <template>
   <div
     class="sidebar"
-    :data-color="sidebarItemColor"
-    :data-image="sidebarBackgroundImage"
+    :data-color="activeColor"
+    :data-image="backgroundImage"
+    :data-background-color="backgroundColor"
     :style="sidebarStyle"
   >
     <div class="logo">
-      <a href="#" class="simple-text logo-mini">
-        <div class="logo-img">
-          <img :src="imgLogo" alt="" />
+      <a
+        href="/"
+        class="simple-text logo-mini"
+        target="_blank"
+      >
+        <div class="logo-img" :style="{borderRadius : 'unset !important'}">
+          <img :src="logo" />
         </div>
       </a>
-
       <a
-        href="https://www.creative-tim.com/product/vue-material-dashboard"
-        target="_blank"
+        href="/"
         class="simple-text logo-normal"
       >
-        {{ title }}
+        <template v-if="$route.meta.rtlActive">{{ rtlTitle }}</template>
+        <template v-else></template>
       </a>
+      <p @click='logout()' class='logout'>logout</p>
+
+      <div class="navbar-minimize">
+        <md-button
+          id="minimizeSidebar"
+          class="md-round md-just-icon md-transparent"
+          @click="minimizeSidebar"
+        >
+          <i class="material-icons text_align-center visible-on-sidebar-regular"
+            >more_vert</i
+          >
+          <i
+            class="material-icons design_bullet-list-67 visible-on-sidebar-mini"
+            >view_list</i
+          >
+        </md-button>
+      </div>
     </div>
-    <div class="sidebar-wrapper">
-      <slot name="content"></slot>
+    <div class="sidebar-wrapper" ref="sidebarScrollArea">
+      <slot></slot>
       <md-list class="nav">
-        <!--By default vue-router adds an active class to each route link. This way the links are colored when clicked-->
-        <slot>
-          <sidebar-link
+        <slot name="links">
+          <sidebar-item
             v-for="(link, index) in sidebarLinks"
             :key="link.name + index"
-            :to="link.path"
             :link="link"
           >
-          </sidebar-link>
+            <sidebar-item
+              v-for="(subLink, index) in link.children"
+              :key="subLink.name + index"
+              :link="subLink"
+            >
+            </sidebar-item>
+          </sidebar-item>
         </slot>
       </md-list>
     </div>
   </div>
 </template>
 <script>
-import SidebarLink from "./SidebarLink.vue";
+import firebase from 'firebase'
+import logo from '../../../public/img/bcg-logo.png'
 
 export default {
-  components: {
-    SidebarLink
+  name: "sidebar",
+  data () {
+    return {
+      logo
+    }
   },
   props: {
     title: {
       type: String,
-      default: "Vue MD"
+      default: "BCG"
     },
-    sidebarBackgroundImage: {
+    rtlTitle: {
       type: String,
-      default: require("@/assets/img/sidebar-2.jpg")
+      default: "توقيت الإبداعية"
     },
-    imgLogo: {
-      type: String,
-      default: require("@/assets/img/vue-logo.png")
-    },
-    sidebarItemColor: {
+    activeColor: {
       type: String,
       default: "green",
       validator: value => {
-        let acceptedValues = ["", "purple", "blue", "green", "orange", "red"];
+        let acceptedValues = [
+          "",
+          "purple",
+          "azure",
+          "green",
+          "orange",
+          "danger",
+          "rose"
+        ];
         return acceptedValues.indexOf(value) !== -1;
       }
     },
+    backgroundImage: {
+      type: String,
+      default: "./img/sidebar-2.jpg"
+    },
+    backgroundColor: {
+      type: String,
+      default: "black",
+      validator: value => {
+        let acceptedValues = ["", "black", "white", "red"];
+        return acceptedValues.indexOf(value) !== -1;
+      }
+    },
+    // logo: {
+    //   type: String,
+    //   default: '../../../public/img/bcg-logo.png'
+    // },
     sidebarLinks: {
       type: Array,
       default: () => []
@@ -79,17 +128,35 @@ export default {
       autoClose: this.autoClose
     };
   },
+  methods: {
+    minimizeSidebar() {
+      if (this.$sidebar) {
+        this.$sidebar.toggleMinimize();
+      }
+    },
+    logout(){
+      firebase.auth().signOut().then(() => {
+        this.$router.replace('login');
+      });
+    }
+  },
   computed: {
     sidebarStyle() {
       return {
-        backgroundImage: `url(${this.sidebarBackgroundImage})`
+        backgroundImage: `url(${this.backgroundImage})`
       };
+    }
+  },
+  beforeDestroy() {
+    if (this.$sidebar.showSidebar) {
+      this.$sidebar.showSidebar = false;
     }
   }
 };
 </script>
 <style>
-@media screen and (min-width: 991px) {
+@media (min-width: 992px) {
+  .navbar-search-form-mobile,
   .nav-mobile-menu {
     display: none;
   }
