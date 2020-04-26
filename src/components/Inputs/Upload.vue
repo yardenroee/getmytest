@@ -1,5 +1,6 @@
 <template>
   <div>
+    <p>{{title}}</p>
     <div class="upload_holder">
       <transition name="fade">
         <div v-if="!media && !load" class="upload_click" @click="$refs.upload.click()">
@@ -19,10 +20,9 @@
         <div v-if="media && !load" class="success">
           <img v-if="media_type == 'image'" :src="media" />
           <video v-if="media_type == 'video'" :src="media"></video>
-          <p @click="$parent.$parent.$parent.media = null" class="text_btn">Remove {{media_type}}</p>
+          <p @click="$emit('removeImage')" class="text_btn">Remove {{media_type}}</p>
         </div>
       </transition>
-
       <input
         ref="upload"
         type="file"
@@ -38,11 +38,16 @@
 import { db, storage } from "@/config/firebaseInit";
 
 export default {
-  props: ["media_type", "media", "directory", 'title'],
+  props: ["media_type", "media", "title"],
   data() {
     return {
       load: false
     };
+  },
+  created() {
+    if (typeof this.media == "object") {
+      this.media = null;
+    }
   },
   methods: {
     uploadImage(e) {
@@ -53,13 +58,10 @@ export default {
         vm.load = true;
       }, 500);
       let media = e.target.files[0];
-      let fileName = media.name;
-      let fileSize = media.size;
       let reader = new FileReader();
-
       reader.readAsDataURL(media);
       reader.onload = e => {
-        let storageRef = storage.ref(`${vm.directory}s/${Date.now()}`);
+        let storageRef = storage.ref(`${vm.media_type}s/${Date.now()}`);
         let uploadTask = storageRef.put(media);
 
         uploadTask.on(
@@ -71,16 +73,7 @@ export default {
           },
           snapshot => {
             uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-              let media = {
-                url: downloadURL,
-                name: fileName,
-                size: fileSize,
-                date: new Date().getTime(),
-                usage_count: null,
-                tags: [{ text: null }]
-              };
-
-              vm.$emit("uploadImage", media);
+              vm.$emit('saveImage', downloadURL)
               vm.load = null;
               setTimeout(function() {
                 vm.load = false;
@@ -104,6 +97,7 @@ export default {
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  margin-bottom: 40px;
 }
 
 .hide_upload {

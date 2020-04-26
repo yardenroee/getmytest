@@ -12,7 +12,7 @@
         class="simple-text logo-mini"
         target="_blank"
       >
-        <div class="logo-img" :style="{borderRadius : 'unset !important'}">
+        <div class="logo-img">
           <img :src="logo" />
         </div>
       </a>
@@ -21,7 +21,7 @@
         class="simple-text logo-normal"
       >
         <template v-if="$route.meta.rtlActive">{{ rtlTitle }}</template>
-        <template v-else></template>
+        <template v-else>{{ title }}</template>
       </a>
       <p @click='logout()' class='logout'>logout</p>
 
@@ -64,19 +64,14 @@
 </template>
 <script>
 import firebase from 'firebase'
-import logo from '../../../public/img/bcg-logo.png'
+
 
 export default {
   name: "sidebar",
-  data () {
-    return {
-      logo
-    }
-  },
   props: {
     title: {
       type: String,
-      default: "BCG"
+      default: "GMT Admin"
     },
     rtlTitle: {
       type: String,
@@ -110,10 +105,10 @@ export default {
         return acceptedValues.indexOf(value) !== -1;
       }
     },
-    // logo: {
-    //   type: String,
-    //   default: '../../../public/img/bcg-logo.png'
-    // },
+    logo: {
+      type: String,
+      default: "../../../.././src/assets/css/bcg_logo.png"
+    },
     sidebarLinks: {
       type: Array,
       default: () => []

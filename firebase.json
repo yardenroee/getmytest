@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "directory-admin",
     "public": "dist",
     "ignore": [
       "firebase.json",

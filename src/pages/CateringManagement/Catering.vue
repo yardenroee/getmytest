@@ -1,6 +1,26 @@
 <template>
   <div class="md-layout">
     <div class="md-layout-item">
+      <Modal @close="showModal = false" :showModal="showModal">
+        <template v-slot:header>
+          <h3>Contacts</h3>
+        </template>
+        <template v-slot:body>
+          <div class="contacts">
+            <div v-for="(contact, i) in contacts" class="contact">
+              <p>
+                {{contact.name}}
+                <span>{{contact.role}}</span>
+                <span>{{contact.email}}</span>
+                <span>{{contact.phone}}</span>
+              </p>
+            </div>
+          </div>
+        </template>
+        <template v-slot:footer>
+          <md-button @click="showModal = false">Close</md-button>
+        </template>
+      </Modal>
       <md-card>
         <md-card-content>
           <md-table
@@ -47,9 +67,7 @@
               <md-table-cell md-label="Company" md-sort-by="company">{{ item.name }}</md-table-cell>
               <md-table-cell md-label="Description" md-sort-by="description">{{ item.description }}</md-table-cell>
 
-              <md-table-cell md-label="Keywords" md-sort-by="tags">
-                <md-chips v-model="item.tags" md-static></md-chips>
-              </md-table-cell>
+            
               <md-table-cell md-label="Edit">
                 <md-button
                   class="md-just-icon md-warning md-simple"
@@ -80,7 +98,7 @@
                 </tr>
               </tfoot>
             </table>
-          </div>-->
+          </div> -->
         </md-card-content>
         <md-card-actions md-alignment="space-between">
           <div class>
@@ -195,6 +213,7 @@ export default {
       router.push(`/catering/${id}`);
     },
     handleDelete(item) {
+      console.log(item)
       Swal.fire({
         title: "Are you sure?",
         text: "You will not be able to undo this",
@@ -218,7 +237,13 @@ export default {
       router.push(`/reports/${client.building_id}/${client.id}`);
     }
   },
-
+  created() {
+    db.collection("catering")
+      .get()
+      .then(results => {
+        console.log(results.docs);
+      });
+  },
   mounted() {
     // Fuse search initialization.
     this.fuseSearch = new Fuse(this.tableData, {
@@ -244,8 +269,8 @@ export default {
 </script>
 <style scoped>
 .md-card.md-theme-default {
-  margin-top: 10px;
-  background: #ffffff !important;
+    margin-top: 10px;
+    background: #ffffff !important;
 }
 /* <style lang="css" scoped> */
 .md-card .md-card-actions {

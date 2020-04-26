@@ -20,7 +20,6 @@ import App from "./App.vue";
 import Chartist from "chartist";
 import firebase from "firebase";
 import { firestorePlugin } from "vuefire";
-import utilities from "./Utilities/main";
 import vSelect from 'vue-select'
 import 'vue-select/dist/vue-select.css';
 
@@ -34,7 +33,6 @@ Vue.use(VueRouter);
 Vue.use(DashboardPlugin);
 Vue.use(firestorePlugin);
 Vue.component('v-select', vSelect)
-Vue.mixin(utilities.mixin());
 Vue.config.productionTip = false;
 
 // user authentification

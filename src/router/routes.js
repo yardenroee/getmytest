@@ -66,10 +66,8 @@ import CateringDetails from "@/pages/CateringManagement/CateringDetails.vue";
 
 import WIFI from "@/pages/WifiManagement/WifiDetails.vue";
 
-import Guests from "@/pages/Guests.vue";
-import CarReserved from "@/pages/CarReserved.vue";
-import Safety from "@/pages/Safety/Safety.vue"
-
+// form submissions
+import FormSubmissions from "@/pages/FormSubmissions/FormSubmissions.vue";
 // Kiosk Management Pages
 
 let componentsMenu = {
@@ -211,63 +209,12 @@ let clientMenu = {
       path: ":rest_id",
       name: "Private Dining",
       components: { default: RestaurantDetails }
-    }
+    },
     // {
     //   path: "/reports/:building_id/:company_id",
     //   name: "Private Dining Reports",
     //   components: { default: CompanyReports }
     // }
-  ],
-  meta: {
-    requiresAuth: true
-  }
-};
-
-let guests = {
-  path: "/guests",
-  component: DashboardLayout,
-  name: "Guests",
-  redirect: "/",
-  children: [
-    {
-      path: "/",
-      name: "Guests",
-      components: { default: Guests }
-    }
-  ],
-  meta: {
-    requiresAuth: true
-  }
-};
-
-let safety = {
-  path: "/safety",
-  component: DashboardLayout,
-  name: "Safety",
-  redirect: "/",
-  children: [
-    {
-      path: "/",
-      name: "Safety",
-      components: { default: Safety }
-    }
-  ],
-  meta: {
-    requiresAuth: true
-  }
-};
-
-let carReserved = {
-  path: "/reservations",
-  component: DashboardLayout,
-  name: "Car Reservations",
-  redirect: "/",
-  children: [
-    {
-      path: "/",
-      name: "Car Reservations",
-      components: { default: CarReserved }
-    }
   ],
   meta: {
     requiresAuth: true
@@ -458,6 +405,30 @@ let products = {
   }
 };
 
+let form_submissions = {
+  path: '/submissions',
+  component: FormSubmissions,
+  name: 'formSubmissions',
+  redirect: '/',
+  children: [
+    {
+      path: 'checked',
+      name: 'formSubmissionsChecked',
+      components: { default: FormSubmissions },
+      props: { checked: true }
+    },
+    {
+      path: 'unchecked',
+      name: 'formSubmissionsUnchecked',
+      components: { default: FormSubmissions },
+      props: { checked: false }
+    }
+  ],
+  meta: {
+    requiresAuth: true
+  }
+};
+
 let register = {
   path: "/register",
   component: DashboardLayout,
@@ -525,21 +496,19 @@ const routes = [
   tablesMenu,
   wifi,
   pagesMenu,
-  clientMenu,
-  catering,
+  // clientMenu,
+  // catering,
   authPages,
   pageVisits,
   emails,
   authPages,
-  safety,
   // referrals,
   customers,
-  carReserved,
-  guests,
   orders,
   products,
-  register,
+  // register,
   videos,
+  form_submissions,
   {
     path: "/",
     component: DashboardLayout,

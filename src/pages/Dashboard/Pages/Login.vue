@@ -6,7 +6,7 @@
     <div class="left_side">
       <img
         class="logo">
-        <img src='../../../.././src/assets/css/bcg_logo.png' style="margin-bottom: 57px; height: 88px;">>
+        <img src='../../../.././src/assets/css/gmt_logo.png' style="margin-bottom: 57px; height: 88px;">>
       <div>
         <form @submit.prevent="logIn">
           <div>

@@ -1,6 +1,26 @@
 <template>
   <div class="md-layout">
     <div class="md-layout-item">
+      <Modal @close="showModal = false" :showModal="showModal">
+        <template v-slot:header>
+          <h3>Contacts</h3>
+        </template>
+        <template v-slot:body>
+          <div class="contacts">
+            <div v-for="(contact, i) in contacts" :key="i" class="contact">
+              <p>
+                {{contact.name}}
+                <span>{{contact.role}}</span>
+                <span>{{contact.email}}</span>
+                <span>{{contact.phone}}</span>
+              </p>
+            </div>
+          </div>
+        </template>
+        <template v-slot:footer>
+          <md-button @click="showModal = false">Close</md-button>
+        </template>
+      </Modal>
       <md-card>
         <md-card-content>
           <md-table
@@ -47,9 +67,6 @@
               <md-table-cell md-label="Company" md-sort-by="company">{{ item.name }}</md-table-cell>
               <md-table-cell md-label="Description" md-sort-by="description">
                 <p v-html="item.description"></p>
-              </md-table-cell>
-              <md-table-cell md-label="Keywords" md-sort-by="tags">
-                <md-chips v-model="item.tags" md-static></md-chips>
               </md-table-cell>
 
               <md-table-cell md-label="Edit">
@@ -220,7 +237,13 @@ export default {
       router.push(`/reports/${client.building_id}/${client.id}`);
     }
   },
-
+  created() {
+    db.collection("restaurants")
+      .get()
+      .then(results => {
+        console.log(results.docs);
+      });
+  },
   mounted() {
     // Fuse search initialization.
     this.fuseSearch = new Fuse(this.tableData, {

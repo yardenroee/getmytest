@@ -1,7 +1,7 @@
 <template>
   <div class="md-layout">
     <div class="md-layout-item">
-      <md-button @click="$router.go(-1)">back</md-button>
+      <md-button @click="$router.go(-1)" >back</md-button>
       <md-card>
         <md-card-content>
           <md-field>
@@ -10,10 +10,6 @@
               <span class="required">*</span>
             </label>
             <md-input v-model="restaurant.name" type="text"></md-input>
-          </md-field>
-          <md-field>
-            <label>Tags</label>
-            <md-chips v-model="restaurant.tags" md-placeholder="Add keyword...(Press Enter To Add)"></md-chips>
           </md-field>
           <md-field>
             <label>Level</label>
@@ -67,7 +63,6 @@
             @saveImages="saveLogo"
             @removeImage="removeLogoImages($event)"
           ></uploadMult>-->
-           <label>Logo</label>
           <upload
             :media_type="'image'"
             title="Logo"
@@ -75,7 +70,6 @@
             @saveImage="saveLogo"
             @removeImage="restaurant.logo = null"
           ></upload>
-           <label>Menu</label>
           <upload
             :media_type="'image'"
             title="Menu"
@@ -83,7 +77,6 @@
             @saveImage="saveMenu"
             @removeImage="restaurant.menu = null"
           ></upload>
-           <label>Main Image</label>
           <upload
             :media_type="'image'"
             title="Main Image"
@@ -125,10 +118,8 @@ export default {
   data() {
     return {
       clients: null,
-      tags: [],
       restaurant: {
         name: "",
-        tags: [],
         logo: "",
         main_image: "",
         description: "",
@@ -200,6 +191,7 @@ export default {
       this.restaurant.details = this.restaurant.details.filter(
         (d, i) => d.text !== detail.text
       );
+     
     },
 
     addDetails() {
@@ -294,5 +286,4 @@ export default {
   margin-top: 10px;
   background: #ffffff !important;
 }
-
 </style>

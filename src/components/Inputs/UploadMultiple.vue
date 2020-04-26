@@ -1,39 +1,46 @@
 <template>
   <div>
-    <label>{{label}}</label>
+    <p>{{title}}</p>
     <div class="upload_holder">
       <transition name="fade">
-        <div v-if="!load" class="upload_click" @click="$refs.upload.click()">
+        <div v-if="!media.length && !load" class="upload_click" @click="$refs.upload.click()">
           <md-icon>present_to_all</md-icon>
-          <p>Click here to upload media.</p>
+          <p>You currently have no media uploaded. Click here to upload media. You can upload multiple</p>
         </div>
       </transition>
 
-      <!-- <transition name="fade">
-        <div v-if="!media.length && load" class="loading">
+      <transition name="fade">
+        <div v-if="!media && load" class="loading">
           <md-icon class="rotate">autorenew</md-icon>
           <p>loading...</p>
         </div>
-      </transition>-->
+      </transition>
 
-      <!-- <transition name="fade">
-        <div v-if="media.length && !load" class="image_success">
-          <div class="image_wrapper" v-for="(image, i) in media" :key="i">
-            <p @click="$emit('removeImage', image.url)" class="text_btn">X</p>
-
-            <img :src="image.url" :alt="image.name" />
-            <video v-if='media_type == "video"' :src="media"></video>
+      <transition name="fade">
+        <div v-if="media.length && !load" class="success">
+          <div class="images" v-for="(m,i) in media" :key="i">
+            <img v-if="media_type == 'image'" :src="m" />
+            <video v-if="media_type == 'video'" :src="m"></video>
+            <p @click="$emit('removeImage', m)" class="text_btn">Remove {{media_type}}</p>
+          </div>
+          <div
+            v-if="media.length"
+            class="upload_click upload_another"
+            @click="$refs.upload.click()"
+          >
+            <md-icon>present_to_all</md-icon>
+            <p>Upload Another Image</p>
           </div>
         </div>
-      </transition> -->
-
+      </transition>
       <input
         ref="upload"
-        multiple
         type="file"
-        :accept="'image/*'"
+        multiple
+        style="display:none;"
+        :accept="media_type+'/*'"
         class="hide_upload"
-        @change="uploadImages"
+        @change="uploadImage"
       />
     </div>
   </div>
@@ -43,15 +50,22 @@
 import { db, storage } from "@/config/firebaseInit";
 
 export default {
-  props: ["label", "media_type", "media", "directory", "currentUser"],
+  props: ["media_type", "media", "title"],
   data() {
     return {
-      load: false,
-      imageURLs: []
+      load: false
     };
   },
+
+  created() {
+    if (this.media == null || typeof this.media == "string") {
+      this.$emit("changeState");
+      this.media = [];
+    }
+  },
   methods: {
-    uploadImages(e) {
+    uploadImage(e) {
+      let input = e.target;
       let vm = this;
       this.upload = null;
       vm.load = null;
@@ -59,53 +73,39 @@ export default {
         vm.load = true;
       }, 500);
 
-      let images = Object.values(e.target.files);
+      if (input.files.length) {
+        let filePromises = [...input.files].map(file => {
+          let metadata = {
+            contentType: file.type
+          };
 
-      images.map(async (media, i) => {
-        let reader = new FileReader();
-        let fileName = media.name;
-        let fileSize = media.size;
+          let media = file;
+          let reader = new FileReader();
+          reader.readAsDataURL(media);
+          reader.onload = e => {
+            let storageRef = storage.ref(`${vm.media_type}s/${Date.now()}`);
+            let uploadTask = storageRef.put(media);
 
-        await reader.readAsDataURL(media);
-        reader.onload = await (async e => {
-          let storageRef = storage.ref(`${vm.directory}s/${Date.now()}`);
-          let uploadTask = storageRef.put(media);
-
-          await uploadTask.on(
-            "state_changed",
-            snapshot => {},
-            error => {
-              vm.logoLoad = false;
-              alert("could not upload images, please try again.");
-            },
-            async snapshot => {
-              await uploadTask.snapshot.ref
-                .getDownloadURL()
-                .then(async downloadURL => {
-                  let url = downloadURL
-                  let media = {};
-                  media.url = url;
-                  media.name = fileName;
-                  media.size = fileSize;
-                  media.date = new Date().getTime();
-                  media.usage_count = null;
-                  media.uploadedBy = this.currentUser;
-                  media.tags = [{ text: null }];
-
-                  this.imageURLs.push(media);
+            uploadTask.on(
+              "state_changed",
+              snapshot => {},
+              error => {
+                vm.logoLoad = false;
+                alert("could not upload logo, please try again.");
+              },
+              snapshot => {
+                uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+                  vm.$emit("saveImages", downloadURL);
                   vm.load = null;
                   setTimeout(function() {
                     vm.load = false;
                   }, 500);
-
-                  if (i == images.length - 1) {
-                    this.$emit("uploadImages", this.imageURLs);
-                  }
                 });
-            }
-          );
+              }
+            );
+          };
         });
-      });
+      }
     }
   }
 };
@@ -113,30 +113,22 @@ export default {
 
 <style lang="css" scoped>
 .upload_holder {
-  width: 50%;
+  width: 100%;
   padding: 30px;
-  background-color: #f7f7f7;
+  /* background-color: #f7f7f7; */
+  /* min-width: 400px; */
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
+  margin-bottom: 40px;
 }
-.image_wrapper {
-  margin-right: 10px;
-  position: relative;
-}
-.text_btn {
-  color: white;
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin: 0;
-  background: red;
-  padding: 5px 10px;
-}
-.hide_upload {
+
+/* .hide_upload {
+  display: hidden;
   position: absolute;
   z-index: -2;
-}
+} */
 
 .upload_click,
 .loading {
@@ -160,9 +152,19 @@ export default {
   margin-bottom: 0;
 }
 
+.upload_another {
+  margin-top: 80px;
+  margin-left: 50px;
+}
 .rotate {
   font-size: 40px !important;
   -webkit-animation: loading 1s infinite linear;
+}
+
+.success {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .success p {
@@ -171,7 +173,7 @@ export default {
 }
 
 .success img {
-  width: 100%;
+  width: 200px;
   max-height: 100%;
 }
 

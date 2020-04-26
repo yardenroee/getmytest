@@ -6,34 +6,34 @@
           <div class="card-icon">
             <i class="fas fa-building"></i>
           </div>
-          <p class="category">Private Dining</p>
+          <p class="category">Unchecked Submissions</p>
           <h3 class="title">
-            <animated-number v-if='restaurants.length > 0' :value="restaurants.length"></animated-number>
+            <!-- <animated-number v-if='restaurants.length > 0' :value="restaurants.length"></animated-number> -->
           </h3>
         </template>
 
         <template slot="footer">
-          <div @click='goTo("restaurant")' class="stats">
+          <div @click='goTo("submissions/unchecked")' class="stats">
             <p>View Details</p>
             <md-icon>navigate_next</md-icon>
           </div>
         </template>
       </stats-card>
     </div>
-    <div class="md-layout-item md-medium-size-50 md-xsmall-size-100 md-size-25">
+<div class="md-layout-item md-medium-size-50 md-xsmall-size-100 md-size-25">
       <stats-card header-color="rose">
         <template slot="header">
           <div class="card-icon">
             <i class="fas fa-user-friends"></i>
           </div>
-          <p class="category">Catering</p>
+          <p class="category">Checked Submissions</p>
           <h3 class="title">
-            <animated-number v-if='caterings.length > 0' :value="caterings.length"></animated-number>
+            <!-- <animated-number v-if='caterings.length > 0' :value="caterings.length"></animated-number> -->
           </h3>
         </template>
 
         <template slot="footer">
-          <div @click='goTo("catering")' class="stats">
+          <div @click='goTo("submissions/checked")' class="stats">
             <p>View Details</p>
             <md-icon>navigate_next</md-icon>
           </div>
@@ -42,7 +42,7 @@
     </div>
 
 
-    <div class="md-layout-item md-medium-size-50 md-xsmall-size-100 md-size-25">
+    <!--<div class="md-layout-item md-medium-size-50 md-xsmall-size-100 md-size-25">
       <stats-card header-color="rose">
         <template slot="header">
           <div class="card-icon">
@@ -76,13 +76,13 @@
         </template>
 
         <template slot="footer">
-          <div @click='goTo("reservations")' class="stats">
+          <div @click='goTo("catering")' class="stats">
             <p>View Details</p>
             <md-icon>navigate_next</md-icon>
           </div>
         </template>
       </stats-card>
-    </div>
+    </div> -->
 
     <!-- <div v-for='k in kiosks' class="md-layout-item md-medium-size-50 md-xsmall-size-100 md-size-50">
       <p class='offline_banner' v-if='isOffline(k)'>OFFLINE</p>
@@ -145,8 +145,8 @@ export default {
   },
   data() {
     return {
-      restaurants: [],
-      caterings: [],
+      restaurants: null,
+      caterings: null,
       guests: [],
       clicks: [],
       reservedCars: [],
@@ -272,7 +272,7 @@ export default {
   firestore() {
     return {
       restaurants: db.collection("restaurants"),
-      caterings: db.collection("catering"),
+      caterings: db.collection("caterings"),
       guests: db.collection('guest'),
       reservedCars: db.collection('reserve_car')
     };

@@ -12,14 +12,11 @@
       <!-- <mobile-menu></mobile-menu> -->
       <template slot="links">
         <sidebar-item :link="{ name: 'Dashboard', icon: 'dashboard', path:'/dashboard' }"></sidebar-item>
-        <sidebar-item :link="{ name: 'Fire and Safety', icon: 'add_alert', path: '/safety' }"></sidebar-item>
-        <sidebar-item :link="{ name: 'Private Dining', icon: 'store', path: '/restaurant' }"></sidebar-item>
-        <sidebar-item :link="{ name: 'Catering', icon: 'local_bar', path: '/catering' }"></sidebar-item>
-        <sidebar-item :link="{ name: 'Guests', icon: 'account_circle', path: '/guests' }"></sidebar-item>
-        <sidebar-item :link="{ name: 'Car Reservations', icon: 'directions_car', path: '/reservations' }"></sidebar-item>
-        <sidebar-item :link="{ name: 'Wifi', icon: 'rss_feed', path: '/wifi' }"></sidebar-item>
-        <sidebar-item :link="{ name: 'Register', icon: 'add_circle_outline' }">
-          <sidebar-item :link="{ name: 'Register', path: '/register' }"></sidebar-item>
+        <!-- <sidebar-item :link="{ name: 'Private Dining', icon: 'store', path: '/restaurants' }"></sidebar-item> -->
+        <!-- <sidebar-item :link="{ name: 'Catering', icon: 'local_bar', path: '/catering' }"></sidebar-item> -->
+        <!-- <sidebar-item :link="{ name: 'Wifi', icon: 'rss_feed', path: '/wifi' }"></sidebar-item> -->
+        <!-- <sidebar-item :link="{ name: 'Register', icon: 'add_circle_outline' }"> -->
+        <!-- <sidebar-item :link="{ name: 'Register', path: '/register' }"></sidebar-item> -->
         </sidebar-item>
       </template>
     </side-bar>
