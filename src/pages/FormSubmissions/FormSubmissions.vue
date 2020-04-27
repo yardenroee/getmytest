@@ -1,5 +1,6 @@
 <template>
-  <div class="md-layout">
+  <div class="md-layout" :class="'main-panel'">
+    <SidebarComponent />
     <div class="md-layout-item md-size-100">
       <md-card>
         <md-card-header class="md-card-header-icon md-card-header-green">
@@ -32,7 +33,7 @@
 
 <script>
 import { db } from "@/config/firebaseInit";
-import SideBar from "@/components/SidebarPlugin/SideBar.vue";
+import SidebarComponent from "@/pages/SidebarComponent.vue"
 import router from "@/router";
 
 export default {
@@ -53,7 +54,7 @@ export default {
     }
   },
   components: {
-    SideBar
+    SidebarComponent
   },
  async created() {
     let checked = this.$route.matched[1].props.checked;
