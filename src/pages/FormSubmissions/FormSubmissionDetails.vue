@@ -68,6 +68,10 @@
                             <md-table-cell md-label="ssn">
                 {{item.ssn}}
               </md-table-cell>
+                            </md-table-cell>
+                            <md-table-cell md-label="Relation">
+                {{item.insurance_relationship}}
+              </md-table-cell>
             </md-table-row>
           </md-table>
         </md-list-item>
