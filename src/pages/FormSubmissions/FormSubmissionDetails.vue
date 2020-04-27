@@ -145,7 +145,6 @@ export default {
     getAllPatients() {
       let patients = this.getPatientInfo(this.submission, [], 1);
       this.patients = patients;
-      console.log(this.patients)
       return this.patients;
     },
     calcAge(dob) {
