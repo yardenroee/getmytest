@@ -1,5 +1,6 @@
 <template>
-  <div class="md-layout">
+  <div class="md-layout" :class="'main-panel'">
+    <SidebarComponent />
     <div class="md-layout-item md-size-100">
       <md-card>
         <md-card-header class="md-card-header-icon md-card-header-green">
@@ -10,10 +11,10 @@
         </md-card-header>
         <md-card-content>
           <md-table v-model="submissions" table-header-color="green">
-            <md-table-row slot="md-table-row" slot-scope="{ item }">
+            <md-table-row slot="md-table-row" slot-scope="{ item }"  @click="goTo(item)">
               <md-table-cell
                 md-label="Transaction ID"
-              >{{ JSON.parse(item.order_info).transactionid }}</md-table-cell>
+               >{{ JSON.parse(item.order_info).transactionid }}</md-table-cell>
               <md-table-cell md-label="Name">{{ item.patient01_name }}</md-table-cell>
               <md-table-cell md-label="Phone Number">
                 {{
@@ -32,12 +33,13 @@
 
 <script>
 import { db } from "@/config/firebaseInit";
-import SideBar from "@/components/SidebarPlugin/SideBar.vue";
+import SidebarComponent from "@/pages/SidebarComponent.vue"
+import router from "@/router";
+
 export default {
   data() {
     return {
       submissions: null,
-      props: this.$route.params
     };
   },
   firestore() {
@@ -45,13 +47,18 @@ export default {
       submissions: db.collection("form_submissions")
     };
   },
-  methods: {},
-  components: {
-    SideBar
+  methods: {
+    goTo(item) {
+      let id = item.id
+      this.$router.push(`/submissions/${id}`);
+    }
   },
-  created() {
-    let checked = this.$route.matched[1].props.checked
-    db.collection("form_submissions")
+  components: {
+    SidebarComponent
+  },
+ async created() {
+    let checked = this.$route.matched[1].props.checked;
+   await db.collection("form_submissions")
       .get()
       .then(results => {
         results.forEach(doc => {
