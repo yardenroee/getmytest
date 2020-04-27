@@ -14,7 +14,7 @@
             <md-table-row slot="md-table-row" slot-scope="{ item }"  @click="goTo(item)">
               <md-table-cell
                 md-label="Transaction ID"
-               >{{ JSON.parse(item.order_info).transactionid }}</md-table-cell>
+               >{{ item.order_info ? JSON.parse(item.order_info).transactionid : nonPaid}}</md-table-cell>
               <md-table-cell md-label="Name">{{ item.patient01_name }}</md-table-cell>
               <md-table-cell md-label="Phone Number">
                 {{
@@ -40,6 +40,7 @@ export default {
   data() {
     return {
       submissions: null,
+      nonPaid : "None Payment"
     };
   },
   firestore() {

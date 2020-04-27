@@ -57,25 +57,16 @@
 
         <md-list-item>
           <md-table v-model="patients" table-header-color="green">
-            <md-table-row slot="md-table-row" slot-scope="{ item }"  >
-              <md-table-cell
-                md-label="Name"
-               >{{ item.name }}</md-table-cell>
-              <md-table-cell md-label="DOB">{{item.dob}} ({{ calcAge(item.dob) }}y/o) </md-table-cell>
-              <md-table-cell md-label="Sex">
-                {{item.sex}}
-              </md-table-cell>
-                            <md-table-cell md-label="ssn">
-                {{item.ssn}}
-              </md-table-cell>
-                            </md-table-cell>
-                            <md-table-cell md-label="Relation">
-                {{item.insurance_relationship}}
-              </md-table-cell>
+            <md-table-row slot="md-table-row" slot-scope="{ item }">
+              <md-table-cell md-label="Name">{{ item.name }}</md-table-cell>
+              <md-table-cell md-label="Date of Birth">{{item.dob}} ({{ calcAge(item.dob) }}y/o)</md-table-cell>
+              <md-table-cell md-label="Sex">{{item.sex}}</md-table-cell>
+              <md-table-cell md-label="SSN">{{item.ssn}}</md-table-cell>
+              <md-table-cell md-label="Relationship">{{item.insurance_relationship}}</md-table-cell>
+              <md-table-cell md-label="Policy Number">{{item.insurance_number}}</md-table-cell>
             </md-table-row>
           </md-table>
         </md-list-item>
-        
       </md-list>
     </div>
   </div>
@@ -86,7 +77,7 @@ import SidebarComponent from "@/pages/SidebarComponent.vue";
 import { db } from "@/config/firebaseInit";
 import router from "@/router";
 import StatsCard from "@/components/Cards/StatsCard.vue";
-import moment from 'moment';
+import moment from "moment";
 export default {
   name: "SubheaderExample",
   components: {
@@ -134,7 +125,7 @@ export default {
       patient.dob = submission[`patient0${n}_dob`];
       patient.sex = submission[`patient0${n}_sex`];
       patient.insurance_company = submission[`patient0${n}_insurance_company`];
-      patient.insutance_number = submission[`patient0${n}_insutance_numbe`];
+      patient.insurance_number = submission[`patient0${n}_insurance_number`];
       patient.insurance_name = submission[`patient0${n}_insurance_name`];
       patient.insurance_relationship =
         submission[`patient0${n}_insurance_relationship`];
@@ -152,9 +143,9 @@ export default {
       return this.patients;
     },
     calcAge(dob) {
-      let newDob = dob.split("/").join("-")
-      let age = moment().diff(newDob,'years',false)
-      return age
+      let newDob = dob.split("/").join("-");
+      let age = moment().diff(newDob, "years", false);
+      return age;
     }
   }
 };
