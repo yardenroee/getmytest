@@ -5,3 +5,5 @@ package-lock.json
 /dist
 functions/
 /functions
+.firebaserc
+firebase.json
