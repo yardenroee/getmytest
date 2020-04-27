@@ -68,6 +68,7 @@ import WIFI from "@/pages/WifiManagement/WifiDetails.vue";
 
 // form submissions
 import FormSubmissions from "@/pages/FormSubmissions/FormSubmissions.vue";
+import FormSubmissionDetails from "@/pages/FormSubmissions/FormSubmissionDetails.vue";
 // Kiosk Management Pages
 
 let componentsMenu = {
@@ -413,21 +414,37 @@ let form_submissions = {
   children: [
     {
       path: 'checked',
-      name: 'formSubmissionsChecked',
+      name: 'Checked',
       components: { default: FormSubmissions },
       props: { checked: true }
     },
     {
       path: 'unchecked',
-      name: 'formSubmissionsUnchecked',
+      name: 'Unchecked',
       components: { default: FormSubmissions },
       props: { checked: false }
-    }
+    },
   ],
   meta: {
     requiresAuth: true
   }
 };
+
+let form_by_id = {
+  path: '/submissions',
+  name: 'Details',
+  component: FormSubmissionDetails,
+  children: [
+    {
+      path: ':id',
+      name: "Form Detail",
+      components: {default: FormSubmissionDetails},
+    }
+  ],
+  meta: {
+    requiresAuth: true
+  }
+}
 
 let register = {
   path: "/register",
@@ -509,6 +526,7 @@ const routes = [
   // register,
   videos,
   form_submissions,
+  form_by_id,
   {
     path: "/",
     component: DashboardLayout,
