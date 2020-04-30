@@ -24,7 +24,7 @@
     "firebase": "^7.3.0",
     "fuse.js": "3.4.5",
     "google-maps": "3.3.0",
-    "jquery": "3.4.1",
+    "jquery": "3.5.0",
     "jvectormap-next": "3.0.0",
     "moment": "2.24.0",
     "moment-timezone": "^0.5.27",
