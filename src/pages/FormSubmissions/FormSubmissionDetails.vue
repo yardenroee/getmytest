@@ -41,6 +41,15 @@
             <span>Personal</span>
           </div>
         </md-list-item>
+        <md-divider></md-divider>
+
+        <md-list-item>
+          <md-button
+            class="administer-btn"
+            @click="showDialog = true"
+            v-if="submission.checked === 'false'"
+          >Administer Test</md-button>
+        </md-list-item>
       </md-list>
     </div>
 
@@ -69,6 +78,48 @@
         </md-list-item>
       </md-list>
     </div>
+    <div>
+      <md-dialog :md-active.sync="showDialog">
+        <md-dialog-title>Practitioner Info</md-dialog-title>
+        <md-dialog-content>
+          <div class="dialog-form">
+            <md-field>
+              <label>Practitioner's Name</label>
+              <md-input v-model="practitioner.name" required></md-input>
+            </md-field>
+            <md-field>
+              <label>Practitioner's Address</label>
+              <md-input v-model="practitioner.address" required></md-input>
+              <span class="md-error">There is an error</span>
+            </md-field>
+            <md-field>
+              <label>Practitioner's Phone Number</label>
+              <md-input v-model="practitioner.phone_number" required></md-input>
+              <span class="md-error">There is an error</span>
+            </md-field>
+            <md-field>
+              <label>Practitioner's NPI#</label>
+              <md-input v-model="practitioner.npi" required></md-input>
+              <span class="md-error">There is an error</span>
+            </md-field>
+            <md-field>
+              <label>Diagnosis</label>
+              <md-textarea v-model="practitioner.diagnosis" required></md-textarea>
+            </md-field>
+            <md-field>
+              <label>Signature</label>
+              <VueSignaturePad width="400px" height="150px" ref="signaturePad" />
+            </md-field>
+            <md-button @click="undoSignature">Undo Signature</md-button>
+          </div>
+        </md-dialog-content>
+
+        <md-dialog-actions>
+          <md-button class="md-primary" @click="showDialog = false">Close</md-button>
+          <md-button class="md-primary" @click="savePDF(); (showDialog=false);">Send to Lab</md-button>
+        </md-dialog-actions>
+      </md-dialog>
+    </div>
   </div>
 </template>
 
@@ -78,17 +129,32 @@ import { db } from "@/config/firebaseInit";
 import router from "@/router";
 import StatsCard from "@/components/Cards/StatsCard.vue";
 import moment from "moment";
+import Swal from "sweetalert2";
+import VueSignaturePad from "vue-signature-pad";
+
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+
 export default {
   name: "SubheaderExample",
   components: {
     SidebarComponent,
-    StatsCard
+    StatsCard,
+    VueSignaturePad
   },
 
   data() {
     return {
       submission: null,
-      patients: []
+      patients: [],
+      showDialog: false,
+      practitioner: {
+        name: "",
+        address: "",
+        phone_number: "",
+        npi: "",
+        diagnosis: ""
+      }
     };
   },
 
@@ -102,7 +168,122 @@ export default {
       });
     await this.getAllPatients();
   },
+
   methods: {
+    validatePractitioner(doc) {
+      let practitioner = this.practitioner;
+      for (let field in practitioner) {
+        if (!practitioner[field]) {
+          Swal.fire(
+            "Failure!",
+            "Please make sure you filled all the fields above.",
+            "error"
+          );
+          return false;
+        }
+      }
+      doc.text("Practitioner's Info:", 14, 30);
+      return doc.autoTable({
+        head: [["Name", "Address", "Diagnosis", "NPI#", "Phone#"]],
+        body: [
+          [
+            practitioner.name,
+            practitioner.address,
+            practitioner.diagnosis,
+            practitioner.npi,
+            practitioner.phone_number
+          ]
+        ],
+        startY: 40
+      });
+    },
+    validateSignature(doc) {
+      const { data } = this.$refs.signaturePad.saveSignature();
+      let width = doc.internal.pageSize.getWidth();
+      let height = doc.internal.pageSize.getHeight();
+      if (!data) {
+        Swal.fire(
+          "Failure!",
+          "Please make sure to sign the signature field!",
+          "error"
+        );
+        return false;
+      }
+      doc.text("Practitioner's Signature:", 14, 90);
+      return doc.addImage(data, "jpeg", 14, 90, width / 3, height / 6);
+    },
+    validateTable(doc) {
+      let practitioner = this.practitioner;
+      let ele = document.querySelector("table");
+      ele.setAttribute("id", "patients-table");
+      doc.text("Patients' Info:", 14, 160);
+      return doc.autoTable({
+        html: "#patients-table",
+        startY: 170,
+        theme: "grid"
+      });
+    },
+    validateQuestions(doc) {
+      doc.setFontSize(13);
+      doc.text("Experienced fever?:", 14, 270);
+      doc.text("Difficulty breathing?:", 74, 270);
+      doc.text("Sore throat?:", 134, 270);
+      doc.text(
+        "Have you been exposed to COVID-19 or believe you have?:",
+        14,
+        280
+      );
+      doc.setFontSize(12);
+
+      if (this.submission.fever === "Yes") {
+        doc.setTextColor("red");
+        doc.text("Yes", 56, 270);
+      } else if (this.submission.fever === "Unsure") {
+        doc.setTextColor("blue");
+        doc.text("Unsure", 56, 270);
+      } else {
+        doc.setTextColor("green");
+        doc.text("No", 56, 270);
+      }
+      if (this.submission.difficulty_breathing === "Yes") {
+        doc.setTextColor("red");
+        doc.text("Yes", 117, 270);
+      } else {
+        doc.setTextColor("green");
+        doc.text("No", 117, 270);
+      }
+      if (this.submission.sore_throat === "Yes") {
+        doc.setTextColor("red");
+        doc.text("Yes", 162, 270);
+      } else {
+        doc.setTextColor("green");
+        doc.text("No", 162, 270);
+      }
+      if (this.submission.exposure === "Yes") {
+        doc.setTextColor("red");
+        doc.text("Yes", 137, 280);
+      } else {
+        doc.setTextColor("green");
+        doc.text("Yes", 137, 280);
+      }
+    },
+    savePDF() {
+      const doc = new jsPDF("p", "mm", "a4");
+      let practitioner = this.validatePractitioner(doc);
+      let table = this.validateTable(doc);
+      let signature = this.validateSignature(doc);
+      let questions = this.validateQuestions(doc);
+      // console.log(doc)
+      var pdfBase64 = doc.output("datauristring");
+
+      // doc.save("table2.pdf");
+    },
+    submit() {
+      Swal.fire("Success!", "You sent the form to the lab!", "success");
+    },
+    undoSignature() {
+      this.$refs.signaturePad.undoSignature();
+    },
     getPatientInfo(submission, arr, n) {
       let patients = arr;
       if (!submission[`patient0${n}_name`]) {
@@ -164,5 +345,21 @@ export default {
 .flex-right {
   display: flex;
   flex-direction: column;
+}
+.administer-btn {
+  width: 100%;
+  display: flex;
+  font-size: 17px;
+  font-weight: bold;
+}
+.md-dialog {
+  max-width: 768px;
+  min-width: 500px;
+  min-height: 600px;
+  // padding: 40px;
+}
+
+.dialog-form {
+  padding: 50px;
 }
 </style>
